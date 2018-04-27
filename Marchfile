@@ -1,0 +1,117 @@
+config {
+    Log {
+        Level string -- default info
+    }
+    Address string -- default :8080
+    Database {
+        URL string -- default pg://user:pass@127.0.0.1/users?sslmode=disabled
+    }
+}
+
+config UpdateInterval interval
+
+config Workers {
+    Queue {
+        Size int -- default 100 minimum 1 maximum 200
+    }
+}
+
+domain User {
+    ID int -- identity
+    Name string
+    Email string -- validate
+    Login string -- validate regex:[a-zA-Z0-9]
+    Password hash -- hidden
+    IsAdmin bool
+    Address {
+        Phone string
+        Address string
+    }
+    Metadata {
+        LastLogin timestamp -- optional
+    }
+    Groups [1:*]Group
+}
+
+domain UserCreateRequest {
+    Name    @User.Name
+    Email   @User.Email
+    Login   @User.Login
+    Phone   @User.Address.Phone
+    Address @User.Address.Address
+}
+
+domain Group {
+    ID int -- identity
+    Name string
+}
+
+service UserService {
+    implement List returning []User
+    implement Create with req as UserCreateRequest returning User
+    implement Update with req as UserUpdateRequest returning User
+    implement Lookup with id as int returning []User
+    implement SearchByName with name as string returning []User
+    implement SearchByEmail with email as string returning []User
+
+    declare SearchAdmins returning []User
+}
+
+error 1000 {
+    CouldNotListUsers        # implies ID=1000, Message=could not list users
+    InvalidUserCreateRequest # implies Id=1001, Message=invalid user create request
+    InvalidUserID            # implies Id=1002, Message=invalid user id
+}
+
+error 2000 {
+    CouldNotCreateUser # implies Id=2000, Message=could not create user
+}
+
+interface UserInterface {
+    GET /user {
+        from UserService call List into users {
+            on FAILURE {
+                render INTERNAL_SERVER_ERROR, CouldNotListUser
+            }
+            on SUCCESS {
+                render OK, users
+            }
+        }
+    }
+
+    POST /user {
+        from REQUEST decode BODY as UserCreateRequest into user {
+            on FAILURE {
+                render BAD_REQUEST, InvalidUserCreateRequest
+            }
+            on SUCCESS {
+                from UserService call Create with user into newUser {
+                    on FAILURE {
+                        render INTERNAL_SERVER_ERROR, CouldNotListUser
+                    }
+                    on SUCCESS {
+                        render CREATED, newUser
+                    }
+                }
+            }
+        }
+    }
+
+    GET /user/:id {
+        from REQUEST_PATH decode id as int into userID {
+            on FAILURE {
+                render BAD_REQUEST, InvalidUserID
+            }
+            on SUCCESS {
+                from UserService call Lookup with userID into user {
+                    on FAILURE {
+                        render INTERNAL_SERVER_ERROR, CouldNotListUser
+                    }
+                    on SUCCESS {
+                        render OK, user
+                    }
+                }
+            }
+        }
+    }
+}
