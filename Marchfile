@@ -1,3 +1,5 @@
+import "repository"
+
 config {
     Log {
         Level string -- default info
@@ -46,29 +48,97 @@ domain Group {
     Name string
 }
 
-service UserService {
-    implement List returning []User
-    implement Create with req as UserCreateRequest returning User
-    implement Update with req as UserUpdateRequest returning User
-    implement Lookup with id as int returning []User
-    implement SearchByName with name as string returning []User
-    implement SearchByEmail with email as string returning []User
-
-    declare SearchAdmins returning []User
-}
-
 error 1000 {
     CouldNotListUsers        # implies ID=1000, Message=could not list users
-    InvalidUserCreateRequest # implies Id=1001, Message=invalid user create request
-    InvalidUserID            # implies Id=1002, Message=invalid user id
+    InvalidUserCreateRequest # implies ID=1001, Message=invalid user create request
+    InvalidUserID            # implies ID=1002, Message=invalid user id
 }
 
 error 2000 {
-    CouldNotCreateUser # implies Id=2000, Message=could not create user
+    CouldNotCreateUser # implies ID=2000, Message=could not create user
+}
+
+error 3000 {
+    CouldNotLoadUsersFromRepository   # implies ID=3000, Message=could not load users from repository
+    UserCreateRequestValidationFailed # implies ID=3001, Message=user create request validation failed
+    CouldNotCreateUser
+}
+
+service UserService {
+
+# implies:
+#
+# func (s *UserService) List(ctx context.Context) ([]*User, error) {
+#   users, err := repository.Of(&User{}).List(ctx)
+#   if err != nil {
+#       return nil, CouldNotLoadUsersFromRepository.WithDetail(err)
+#   }
+#   return users, nil
+# }
+    method List returns []User {
+        from repository call ListUser into users {
+            on FAILURE {
+                return CouldNotLoadUsersFromRepository
+            }
+            on SUCCESS {
+                return users
+            }
+        }
+    }
+
+# implies:
+#
+# func (s *UserService) Create(ctx context.Context, req *UserCreateRequestValidationFailed) (*User, error) {
+#   if err := req.Validate(ctx); err != nil {
+#       return nil, UserCreateRequestValidationFailed.WithDetail(err)
+#   }
+#   user, err := repository.Of(&User{}).Create(ctx, req)
+#   if err != nil {
+#       return nil, CouldNotCreateUser.WithDetail(err)
+#   }
+#   return users, nil
+# }
+    method Create with req as UserCreateRequest returns User {
+        from req call Validate {
+            on FAILURE {
+                return UserCreateRequestValidationFailed
+            }
+            on SUCCESS {
+                from repository call CreateUser with req into user {
+                    on FAILURE {
+                        return CouldNotCreateUser
+                    }
+                    on SUCCESS {
+                        return user
+                    }
+                }
+            }
+        }
+    }
+
+    method Update with req as UserUpdateRequest returns User {
+
+    }
+
+    method Lookup with id as int returns []User {
+
+    }
+
+    method SearchByName with name as string returns []User {
+
+    }
+
+    method SearchByEmail with email as string returns []User {
+
+    }
+
+    method SearchAdmins returns []User {
+
+    }
 }
 
 interface UserInterface {
-    GET /user {
+    GET "/user" {
         from UserService call List into users {
             on FAILURE {
                 render INTERNAL_SERVER_ERROR, CouldNotListUser
@@ -79,7 +149,7 @@ interface UserInterface {
         }
     }
 
-    POST /user {
+    POST "/user" {
         from REQUEST decode BODY as UserCreateRequest into user {
             on FAILURE {
                 render BAD_REQUEST, InvalidUserCreateRequest
@@ -97,7 +167,7 @@ interface UserInterface {
         }
     }
 
-    GET /user/:id {
+    GET "/user/:id" {
         from REQUEST_PATH decode id as int into userID {
             on FAILURE {
                 render BAD_REQUEST, InvalidUserID
