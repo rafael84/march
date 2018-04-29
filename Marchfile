@@ -1,4 +1,4 @@
-import "repository"
+import "config"
 
 config {
     Log {
@@ -8,14 +8,22 @@ config {
     Database {
         URL string -- default pg://user:pass@127.0.0.1/users?sslmode=disabled
     }
+    Workers {
+        Queue {
+            Size int -- default 100 minimum 1 maximum 200
+        }
+    }
+    UpdateInterval interval
 }
 
-config UpdateInterval interval
 
-config Workers {
-    Queue {
-        Size int -- default 100 minimum 1 maximum 200
-    }
+domain UserAddress {
+    Phone string
+    Address string
+}
+
+domain UserMetadata {
+    LastLogin timestamp
 }
 
 domain User {
@@ -25,27 +33,42 @@ domain User {
     Login string -- validate regex:[a-zA-Z0-9]
     Password hash -- hidden
     IsAdmin bool
-    Address {
-        Phone string
-        Address string
-    }
-    Metadata {
-        LastLogin timestamp -- optional
-    }
-    Groups [1:*]Group
+    Address UserAddress
+    Metadata UserMetadata -- optional
+    GroupID int -- foreign Group
+    Groups []Group -- fetch LAZY
 }
 
 domain UserCreateRequest {
     Name    @User.Name
     Email   @User.Email
     Login   @User.Login
-    Phone   @User.Address.Phone
-    Address @User.Address.Address
+    Phone   @Address.Phone
+    Address @Address.Address
+}
+
+domain UserUpdateRequest {
+    Name    @User.Name
+    Email   @User.Email
+    Phone   @Address.Phone
+    Address @Address.Address
 }
 
 domain Group {
     ID int -- identity
     Name string
+}
+
+
+# implies a CRUD like repository for domain User
+repository UserRepository for User {
+    option "table" is "auth.user"
+}
+
+
+# implies a CRUD like repository for domain Group
+repository GroupRepository for Group {
+
 }
 
 error 1000 {
@@ -56,68 +79,86 @@ error 1000 {
 
 error 2000 {
     CouldNotCreateUser # implies ID=2000, Message=could not create user
+    UserNotFound
 }
 
 error 3000 {
     CouldNotLoadUsersFromRepository   # implies ID=3000, Message=could not load users from repository
-    UserCreateRequestValidationFailed # implies ID=3001, Message=user create request validation failed
+    UserCreateRequestValidationFailed
     CouldNotCreateUser
+    UserUpdateRequestValidationFailed
+    CouldNotUpdateUser
 }
+
 
 service UserService {
 
 # implies:
 #
 # func (s *UserService) List(ctx context.Context) ([]*User, error) {
+#   ctx, logger := cid.Track(ctx, tag)
 #   users, err := repository.Of(&User{}).List(ctx)
 #   if err != nil {
+#       logger.W(CouldNotLoadUsersFromRepository.Message, "err", err)
 #       return nil, CouldNotLoadUsersFromRepository.WithDetail(err)
 #   }
 #   return users, nil
 # }
     method List returns []User {
-        from repository call ListUser into users {
+        from UserRepository do List returning users {
             on FAILURE {
                 return CouldNotLoadUsersFromRepository
             }
-            on SUCCESS {
-                return users
-            }
         }
+        return users
     }
 
-# implies:
+#   implies:
 #
-# func (s *UserService) Create(ctx context.Context, req *UserCreateRequestValidationFailed) (*User, error) {
-#   if err := req.Validate(ctx); err != nil {
-#       return nil, UserCreateRequestValidationFailed.WithDetail(err)
+#   func (s *UserService) Create(ctx context.Context, req *UserCreateRequestValidationFailed) (*User, error) {
+#       ctx, logger := cid.Track(ctx, tag)
+#       if err := req.Validate(ctx); err != nil {
+#           logger.W(UserCreateRequestValidationFailed.Message, "err", err)
+#           return nil, UserCreateRequestValidationFailed.WithDetail(err)
+#       }
+#       user, err := repository.Of(&User{}).Create(ctx, req)
+#       if err != nil {
+#           logger.W(CouldNotCreateUser.Message, "err", err)
+#           return nil, CouldNotCreateUser.WithDetail(err)
+#       }
+#       return users, nil
 #   }
-#   user, err := repository.Of(&User{}).Create(ctx, req)
-#   if err != nil {
-#       return nil, CouldNotCreateUser.WithDetail(err)
-#   }
-#   return users, nil
-# }
     method Create with req as UserCreateRequest returns User {
-        from req call Validate {
+        from req do Validate {
             on FAILURE {
                 return UserCreateRequestValidationFailed
             }
-            on SUCCESS {
-                from repository call CreateUser with req into user {
-                    on FAILURE {
-                        return CouldNotCreateUser
-                    }
-                    on SUCCESS {
-                        return user
-                    }
-                }
+        }
+        from UserRepository do Create with req returning user {
+            on FAILURE {
+                return CouldNotCreateUser
             }
         }
+        return user
     }
 
-    method Update with req as UserUpdateRequest returns User {
-
+    method Update with userID as int and req as UserUpdateRequest returns User {
+        from req do Validate {
+            on FAILURE {
+                return UserUpdateRequestValidationFailed
+            }
+        }
+        from UserRepository do Lookup with userID returning user {
+            on FAILURE {
+                return UserNotFound
+            }
+        }
+        from UserRepository do Update with req returning user {
+            on FAILURE {
+                return CouldNotUpdateUser
+            }
+        }
+        return user
     }
 
     method Lookup with id as int returns []User {
@@ -139,49 +180,61 @@ service UserService {
 
 interface UserInterface {
     GET "/user" {
-        from UserService call List into users {
+        from UserService do List returning users {
             on FAILURE {
-                render INTERNAL_SERVER_ERROR, CouldNotListUser
-            }
-            on SUCCESS {
-                render OK, users
+                render INTERNAL_SERVER_ERROR and CouldNotListUser
             }
         }
+        render OK and users
     }
 
     POST "/user" {
-        from REQUEST decode BODY as UserCreateRequest into user {
+        from REQUEST decode BODY as UserCreateRequest returning user {
             on FAILURE {
-                render BAD_REQUEST, InvalidUserCreateRequest
-            }
-            on SUCCESS {
-                from UserService call Create with user into newUser {
-                    on FAILURE {
-                        render INTERNAL_SERVER_ERROR, CouldNotListUser
-                    }
-                    on SUCCESS {
-                        render CREATED, newUser
-                    }
-                }
+                render BAD_REQUEST and InvalidUserCreateRequest
             }
         }
+        from UserService do Create with user returning newUser {
+            on FAILURE {
+                render INTERNAL_SERVER_ERROR and CouldNotListUser
+            }
+        }
+        render CREATED and newUser
     }
 
     GET "/user/:id" {
-        from REQUEST_PATH decode id as int into userID {
+        from REQUEST_PATH decode id as int returning userID {
             on FAILURE {
-                render BAD_REQUEST, InvalidUserID
-            }
-            on SUCCESS {
-                from UserService call Lookup with userID into user {
-                    on FAILURE {
-                        render INTERNAL_SERVER_ERROR, CouldNotListUser
-                    }
-                    on SUCCESS {
-                        render OK, user
-                    }
-                }
+                render BAD_REQUEST and InvalidUserID
             }
         }
+        from UserService do Lookup with userID returning user {
+            on FAILURE {
+                render INTERNAL_SERVER_ERROR and CouldNotListUser
+            }
+        }
+        render OK and user
+    }
+
+    PUT "/user/:id" {
+        from REQUEST_PATH decode id as int returning userID {
+            on FAILURE {
+                render BAD_REQUEST and InvalidUserID
+            }
+        }
+        from REQUEST decode BODY as UserUpdateRequest returning req {
+            on FAILURE {
+                render BAD_REQUEST and InvalidUserCreateRequest
+            }
+        }
+        from UserService do Update with id and req returning user {
+            on UserNotFound {
+                render NOT_FOUND and UserNotFound
+            }
+            on FAILURE {
+                render INTERNAL_SERVER_ERROR and CouldNotUpdateUser
+            }
+        }
+        render OK and user
     }
 }
