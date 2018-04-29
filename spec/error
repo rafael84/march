@@ -18,5 +18,3 @@ error 3000 {
     UserUpdateRequestValidationFailed
     CouldNotUpdateUser
 }
-
-

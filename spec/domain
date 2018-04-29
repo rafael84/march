@@ -1,24 +1,20 @@
 # vim:ft=Marchfile
 
-domain UserAddress {
-    Phone string
-    Address string
-}
-
-domain UserMetadata {
-    LastLogin timestamp
-}
-
 domain User {
-    ID int -- identity
+    ID int -- index "primary"
     Name string
-    Email string -- validate
-    Login string -- validate regex:[a-zA-Z0-9]
-    Password hash -- hidden
+    Email string -- validate "email"
+    Login string -- validate "regex:[a-zA-Z0-9]"
+    Password hash -- visibility "hidden"
     IsAdmin bool
-    Address UserAddress
-    Metadata UserMetadata -- optional
-    Groups [GroupID]Group
+    Address {
+        Phone string
+        Address string
+    }
+    Metadata {
+        LastLogin timestamp
+    }
+    Groups []Group -- fetch "LAZY"
 }
 
 domain UserCreateRequest {
@@ -37,7 +33,6 @@ domain UserUpdateRequest {
 }
 
 domain Group {
-    ID int -- identity
+    ID int -- index "primary"
     Name string
 }
-
