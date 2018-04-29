@@ -1,0 +1,17 @@
+# vim:ft=Marchfile
+
+config {
+    Log {
+        Level string -- default info
+    }
+    Address string -- default :8080
+    Database {
+        URL string -- default pg://user:pass@127.0.0.1/users?sslmode=disabled
+    }
+    Workers {
+        Queue {
+            Size int -- default 100 minimum 1 maximum 200
+        }
+    }
+    UpdateInterval interval
+}

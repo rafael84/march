@@ -1,0 +1,22 @@
+# vim:ft=Marchfile
+
+error 1000 {
+    CouldNotListUsers        # implies ID=1000, Message=could not list users
+    InvalidUserCreateRequest # implies ID=1001, Message=invalid user create request
+    InvalidUserID            # implies ID=1002, Message=invalid user id
+}
+
+error 2000 {
+    CouldNotCreateUser # implies ID=2000, Message=could not create user
+    UserNotFound
+}
+
+error 3000 {
+    CouldNotLoadUsersFromRepository   # implies ID=3000, Message=could not load users from repository
+    UserCreateRequestValidationFailed
+    CouldNotCreateUser
+    UserUpdateRequestValidationFailed
+    CouldNotUpdateUser
+}
+
+

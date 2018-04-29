@@ -1,0 +1,62 @@
+# vim:ft=Marchfile
+
+interface UserInterface {
+    GET "/user" {
+        from UserService do List returning users {
+            on FAILURE {
+                render INTERNAL_SERVER_ERROR and CouldNotListUser
+            }
+        }
+        render OK and users
+    }
+
+    POST "/user" {
+        from REQUEST decode BODY as UserCreateRequest returning user {
+            on FAILURE {
+                render BAD_REQUEST and InvalidUserCreateRequest
+            }
+        }
+        from UserService do Create with user returning newUser {
+            on FAILURE {
+                render INTERNAL_SERVER_ERROR and CouldNotListUser
+            }
+        }
+        render CREATED and newUser
+    }
+
+    GET "/user/:id" {
+        from REQUEST_PATH decode id as int returning userID {
+            on FAILURE {
+                render BAD_REQUEST and InvalidUserID
+            }
+        }
+        from UserService do Lookup with userID returning user {
+            on FAILURE {
+                render INTERNAL_SERVER_ERROR and CouldNotListUser
+            }
+        }
+        render OK and user
+    }
+
+    PUT "/user/:id" {
+        from REQUEST_PATH decode id as int returning userID {
+            on FAILURE {
+                render BAD_REQUEST and InvalidUserID
+            }
+        }
+        from REQUEST decode BODY as UserUpdateRequest returning req {
+            on FAILURE {
+                render BAD_REQUEST and InvalidUserCreateRequest
+            }
+        }
+        from UserService do Update with id and req returning user {
+            on UserNotFound {
+                render NOT_FOUND and UserNotFound
+            }
+            on FAILURE {
+                render INTERNAL_SERVER_ERROR and CouldNotUpdateUser
+            }
+        }
+        render OK and user
+    }
+}

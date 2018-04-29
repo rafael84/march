@@ -1,0 +1,88 @@
+# vim:ft=Marchfile
+
+service UserService {
+
+# implies:
+#
+# func (s *UserService) List(ctx context.Context) ([]*User, error) {
+#   ctx, logger := cid.Track(ctx, tag)
+#   users, err := repository.Of(&User{}).List(ctx)
+#   if err != nil {
+#       logger.W(CouldNotLoadUsersFromRepository.Message, "err", err)
+#       return nil, CouldNotLoadUsersFromRepository.WithDetail(err)
+#   }
+#   return users, nil
+# }
+    method List returns []User {
+        from UserRepository do List returning users {
+            on FAILURE {
+                return CouldNotLoadUsersFromRepository
+            }
+        }
+        return users
+    }
+
+#   implies:
+#
+#   func (s *UserService) Create(ctx context.Context, req *UserCreateRequestValidationFailed) (*User, error) {
+#       ctx, logger := cid.Track(ctx, tag)
+#       if err := req.Validate(ctx); err != nil {
+#           logger.W(UserCreateRequestValidationFailed.Message, "err", err)
+#           return nil, UserCreateRequestValidationFailed.WithDetail(err)
+#       }
+#       user, err := repository.Of(&User{}).Create(ctx, req)
+#       if err != nil {
+#           logger.W(CouldNotCreateUser.Message, "err", err)
+#           return nil, CouldNotCreateUser.WithDetail(err)
+#       }
+#       return users, nil
+#   }
+    method Create with req as UserCreateRequest returns User {
+        from req do Validate {
+            on FAILURE {
+                return UserCreateRequestValidationFailed
+            }
+        }
+        from UserRepository do Create with req returning user {
+            on FAILURE {
+                return CouldNotCreateUser
+            }
+        }
+        return user
+    }
+
+    method Update with userID as int and req as UserUpdateRequest returns User {
+        from req do Validate {
+            on FAILURE {
+                return UserUpdateRequestValidationFailed
+            }
+        }
+        from UserRepository do Lookup with userID returning user {
+            on FAILURE {
+                return UserNotFound
+            }
+        }
+        from UserRepository do Update with req returning user {
+            on FAILURE {
+                return CouldNotUpdateUser
+            }
+        }
+        return user
+    }
+
+    method Lookup with id as int returns []User {
+
+    }
+
+    method SearchByName with name as string returns []User {
+
+    }
+
+    method SearchByEmail with email as string returns []User {
+
+    }
+
+    method SearchAdmins returns []User {
+
+    }
+}

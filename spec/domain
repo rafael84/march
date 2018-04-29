@@ -1,0 +1,43 @@
+# vim:ft=Marchfile
+
+domain UserAddress {
+    Phone string
+    Address string
+}
+
+domain UserMetadata {
+    LastLogin timestamp
+}
+
+domain User {
+    ID int -- identity
+    Name string
+    Email string -- validate
+    Login string -- validate regex:[a-zA-Z0-9]
+    Password hash -- hidden
+    IsAdmin bool
+    Address UserAddress
+    Metadata UserMetadata -- optional
+    Groups [GroupID]Group
+}
+
+domain UserCreateRequest {
+    Name    @User.Name
+    Email   @User.Email
+    Login   @User.Login
+    Phone   @Address.Phone
+    Address @Address.Address
+}
+
+domain UserUpdateRequest {
+    Name    @User.Name
+    Email   @User.Email
+    Phone   @Address.Phone
+    Address @Address.Address
+}
+
+domain Group {
+    ID int -- identity
+    Name string
+}
+
