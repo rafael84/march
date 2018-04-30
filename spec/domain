@@ -1,38 +1,75 @@
 # vim:ft=Marchfile
 
+@Entity "user.user"
 domain User {
-    ID int -- index "primary"
+
+    @ID
+    ID int
+
     Name string
-    Email string -- validate "email"
-    Login string -- validate "regex:[a-zA-Z0-9]"
-    Password hash -- visibility "hidden"
+
+    @Validate "email"
+    Email string
+
+    @Validate "regex:[a-zA-Z0-9]"
+    Login string
+
+    @Hash
+    @Hidden
+    Password string
+
+    @Column "is_admin"
     IsAdmin bool
+
+    @JSON
     Address {
         Phone string
         Address string
     }
+
+    @JSON
     Metadata {
         LastLogin timestamp
     }
-    Groups []Group -- fetch "LAZY"
+
+    @OneToMany
+    Groups []Group
+
+    @OneToMany
+    Permissions []Permission
 }
 
-domain UserCreateRequest {
-    Name    @User.Name
-    Email   @User.Email
-    Login   @User.Login
-    Phone   @Address.Phone
-    Address @Address.Address
-}
-
-domain UserUpdateRequest {
-    Name    @User.Name
-    Email   @User.Email
-    Phone   @Address.Phone
-    Address @Address.Address
-}
-
+@Entity "user.group"
 domain Group {
-    ID int -- index "primary"
+    @ID
+    ID int
+
     Name string
+}
+
+@Entity "user.permission"
+domain Permission {
+    @ID
+    ID int
+
+    @Column
+    Name string
+}
+
+@View "User"
+domain UserCreateRequest {
+    Name
+    Email
+
+    @Bind "Login"
+    Username
+
+    Address
+}
+
+@View "User"
+domain UserUpdateRequest {
+    Name
+    Email
+    Address
 }

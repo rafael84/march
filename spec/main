@@ -1,9 +1,6 @@
 # vim:ft=Marchfile
-module user
-
 import "config"
 import "domain"
 import "error"
-import "repository"
 import "service"
 import "interface"
