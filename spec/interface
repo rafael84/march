@@ -1,6 +1,7 @@
 # vim:ft=Marchfile
 
-interface UserInterface {
+UserAPI interface {
+
     GET "/user" {
         from UserService do List returning users {
             on FAILURE {

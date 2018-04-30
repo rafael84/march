@@ -1,6 +1,6 @@
 # vim:ft=Marchfile
 
-service UserService {
+UserService service {
 
 # implies:
 #
@@ -13,7 +13,8 @@ service UserService {
 #   }
 #   return users, nil
 # }
-    method List returns []User {
+    List () []User {
+
         from UserRepository do List returning users {
             on FAILURE {
                 return CouldNotLoadUsersFromRepository
@@ -37,7 +38,7 @@ service UserService {
 #       }
 #       return users, nil
 #   }
-    method Create with req as UserCreateRequest returns User {
+    Create (req UserCreateRequest) User {
         from req do Validate {
             on FAILURE {
                 return UserCreateRequestValidationFailed
@@ -51,7 +52,7 @@ service UserService {
         return user
     }
 
-    method Update with userID as int and req as UserUpdateRequest returns User {
+    Update (userID int, req UserUpdateRequest) User {
         from req do Validate {
             on FAILURE {
                 return UserUpdateRequestValidationFailed
@@ -70,19 +71,19 @@ service UserService {
         return user
     }
 
-    method Lookup with id as int returns []User {
+    Lookup (id int) []User {
 
     }
 
-    method SearchByName with name as string returns []User {
+    SearchByName (name string) []User {
 
     }
 
-    method SearchByEmail with email as string returns []User {
+    SearchByEmail (email string) []User {
 
     }
 
-    method SearchAdmins returns []User {
+    SearchAdmins () []User {
 
     }
 }

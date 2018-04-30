@@ -1,7 +1,7 @@
 # vim:ft=Marchfile
 
-@Entity "user.user"
-domain User {
+@Table "user.user"
+User entity {
 
     @ID
     ID int
@@ -39,25 +39,24 @@ domain User {
     Permissions []Permission
 }
 
-@Entity "user.group"
-domain Group {
+@Table "user.group"
+Group entity {
     @ID
     ID int
 
     Name string
 }
 
-@Entity "user.permission"
-domain Permission {
+@Table "user.permission"
+Permission entity {
     @ID
     ID int
 
-    @Column
     Name string
 }
 
 @View "User"
-domain UserCreateRequest {
+UserCreateRequest view {
     Name
     Email
 
@@ -68,7 +67,7 @@ domain UserCreateRequest {
 }
 
 @View "User"
-domain UserUpdateRequest {
+UserUpdateRequest view {
     Name
     Email
     Address

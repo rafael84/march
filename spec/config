@@ -2,15 +2,23 @@
 
 config {
     Log {
-        Level string -- default info
+        @Default "info"
+        Level string
     }
-    Address string -- default :8080
+
+    @Default ":8080"
+    Address string
+
     Database {
-        URL string -- default pg://user:pass@127.0.0.1/users?sslmode=disabled
+        @Default "pg://user:pass@127.0.0.1/users?sslmode=disabled"
+        URL string
     }
     Workers {
         Queue {
-            Size int -- default 100 minimum 1 maximum 200
+            @Minimum "1"
+            @Default "100"
+            @Maximum "200"
+            Size int
         }
     }
     UpdateInterval interval
