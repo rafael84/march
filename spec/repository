@@ -1,0 +1,4 @@
+# vim:ft=Marchfile
+module user
+
+UserRepository persists User

@@ -13,8 +13,7 @@ UserService service {
 #   }
 #   return users, nil
 # }
-    List () []User {
-
+    List returns []User {
         from UserRepository do List returning users {
             on FAILURE {
                 return CouldNotLoadUsersFromRepository
@@ -38,7 +37,7 @@ UserService service {
 #       }
 #       return users, nil
 #   }
-    Create (req UserCreateRequest) User {
+    Create with req UserCreateRequest returns User {
         from req do Validate {
             on FAILURE {
                 return UserCreateRequestValidationFailed
@@ -52,7 +51,7 @@ UserService service {
         return user
     }
 
-    Update (userID int, req UserUpdateRequest) User {
+    Update with userID int and req UserUpdateRequest returns User {
         from req do Validate {
             on FAILURE {
                 return UserUpdateRequestValidationFailed
@@ -71,19 +70,19 @@ UserService service {
         return user
     }
 
-    Lookup (id int) []User {
+    Lookup with id int returns []User {
 
     }
 
-    SearchByName (name string) []User {
+    SearchByName with name string returns []User {
 
     }
 
-    SearchByEmail (email string) []User {
+    SearchByEmail with email string returns []User {
 
     }
 
-    SearchAdmins () []User {
+    SearchAdmins returns []User {
 
     }
 }

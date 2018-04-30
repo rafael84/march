@@ -1,4 +1,5 @@
 # vim:ft=Marchfile
+module user
 
 UserAPI interface {
 
@@ -18,15 +19,18 @@ UserAPI interface {
             }
         }
         from UserService do Create with user returning newUser {
+            on UserCreateRequestValidationFailed {
+                render BAD_REQUEST and FAILURE
+            }
             on FAILURE {
-                render INTERNAL_SERVER_ERROR and CouldNotListUser
+                render INTERNAL_SERVER_ERROR and CouldNotCreateUser
             }
         }
         render CREATED and newUser
     }
 
     GET "/user/:id" {
-        from REQUEST_PATH decode id as int returning userID {
+        from PATH decode id as int returning userID {
             on FAILURE {
                 render BAD_REQUEST and InvalidUserID
             }
@@ -40,7 +44,7 @@ UserAPI interface {
     }
 
     PUT "/user/:id" {
-        from REQUEST_PATH decode id as int returning userID {
+        from PATH decode id as int returning userID {
             on FAILURE {
                 render BAD_REQUEST and InvalidUserID
             }

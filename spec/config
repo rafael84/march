@@ -1,4 +1,5 @@
 # vim:ft=Marchfile
+module main
 
 config {
     Log {

@@ -1,4 +1,5 @@
 # vim:ft=Marchfile
+module main
 
 error 1000 {
     CouldNotListUsers        # implies ID=1000, Message=could not list users

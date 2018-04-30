@@ -1,4 +1,5 @@
 # vim:ft=Marchfile
+module user
 
 @Table "user.user"
 User entity {
@@ -21,12 +22,16 @@ User entity {
     @Column "is_admin"
     IsAdmin bool
 
-    @JSON
+#   implies:
+#       AddressPhone string
+#       AddressCity string
     Address {
         Phone string
-        Address string
+        City string
     }
 
+#   implies:
+#       Metadata data.JSONB
     @JSON
     Metadata {
         LastLogin timestamp
@@ -53,22 +58,4 @@ Permission entity {
     ID int
 
     Name string
-}
-
-@View "User"
-UserCreateRequest view {
-    Name
-    Email
-
-    @Bind "Login"
-    Username
-
-    Address
-}
-
-@View "User"
-UserUpdateRequest view {
-    Name
-    Email
-    Address
 }

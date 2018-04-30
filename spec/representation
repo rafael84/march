@@ -1,0 +1,15 @@
+# vim:ft=Marchfile
+module user
+
+UserCreateRequest represents User {
+    Name
+    Email
+    Login
+    Address
+}
+
+UserUpdateRequest represents User {
+    Name
+    Email
+    Address
+}
