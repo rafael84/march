@@ -2,11 +2,12 @@
 module user
 
 @Table "user.user"
-User entity {
+User model {
 
     @ID
     ID int
 
+    @Index
     Name string
 
     @Validate "email"
@@ -45,7 +46,7 @@ User entity {
 }
 
 @Table "user.group"
-Group entity {
+Group model {
     @ID
     ID int
 
@@ -53,7 +54,7 @@ Group entity {
 }
 
 @Table "user.permission"
-Permission entity {
+Permission model {
     @ID
     ID int
 

@@ -4,64 +4,54 @@ module user
 UserAPI interface {
 
     GET "/user" {
-        from UserService do List returning users {
-            on FAILURE {
-                render INTERNAL_SERVER_ERROR and CouldNotListUser
-            }
-        }
-        render OK and users
+        set users from UserService do List \
+            or halt with INTERNAL_SERVER_ERROR and CouldNotListUser
+
+        return OK and users
     }
 
     POST "/user" {
-        from REQUEST decode BODY as UserCreateRequest returning user {
-            on FAILURE {
-                render BAD_REQUEST and InvalidUserCreateRequest
+        set user from REQUEST decode BODY as UserCreateRequest \
+            or halt with BAD_REQUEST and InvalidUserCreateRequest
+
+        set newUser from UserService do Create with user {
+            when UserCreateRequestValidationFailed {
+                return BAD_REQUEST and FAILURE
+            }
+            when FAILURE {
+                return INTERNAL_SERVER_ERROR and CouldNotCreateUser
             }
         }
-        from UserService do Create with user returning newUser {
-            on UserCreateRequestValidationFailed {
-                render BAD_REQUEST and FAILURE
-            }
-            on FAILURE {
-                render INTERNAL_SERVER_ERROR and CouldNotCreateUser
-            }
-        }
-        render CREATED and newUser
+
+        return CREATED and newUser
     }
 
     GET "/user/:id" {
-        from PATH decode id as int returning userID {
-            on FAILURE {
-                render BAD_REQUEST and InvalidUserID
-            }
-        }
-        from UserService do Lookup with userID returning user {
-            on FAILURE {
-                render INTERNAL_SERVER_ERROR and CouldNotListUser
-            }
-        }
-        render OK and user
+        set userID from PATH decode id as int \
+            or halt with BAD_REQUEST and InvalidUserID
+
+        set user from UserService do Lookup with userID \
+            or halt with INTERNAL_SERVER_ERROR and CouldNotListUser
+
+        return OK and user
     }
 
     PUT "/user/:id" {
-        from PATH decode id as int returning userID {
-            on FAILURE {
-                render BAD_REQUEST and InvalidUserID
+        set userID from PATH decode id as int \
+            or halt with BAD_REQUEST and InvalidUserID
+
+        set req from REQUEST decode BODY as UserUpdateRequest \
+            or halt with BAD_REQUEST and InvalidUserCreateRequest
+
+        set req from UserService do Update with id and req {
+            when UserNotFound {
+                return NOT_FOUND and UserNotFound
+            }
+            when FAILURE {
+                return INTERNAL_SERVER_ERROR and CouldNotUpdateUser
             }
         }
-        from REQUEST decode BODY as UserUpdateRequest returning req {
-            on FAILURE {
-                render BAD_REQUEST and InvalidUserCreateRequest
-            }
-        }
-        from UserService do Update with id and req returning user {
-            on UserNotFound {
-                render NOT_FOUND and UserNotFound
-            }
-            on FAILURE {
-                render INTERNAL_SERVER_ERROR and CouldNotUpdateUser
-            }
-        }
-        render OK and user
+
+        return OK and user
     }
 }

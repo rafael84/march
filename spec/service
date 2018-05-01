@@ -1,88 +1,143 @@
 # vim:ft=Marchfile
 
+# type UserService struct {}
 UserService service {
 
-# implies:
-#
-# func (s *UserService) List(ctx context.Context) ([]*User, error) {
-#   ctx, logger := cid.Track(ctx, tag)
-#   users, err := repository.Of(&User{}).List(ctx)
-#   if err != nil {
-#       logger.W(CouldNotLoadUsersFromRepository.Message, "err", err)
-#       return nil, CouldNotLoadUsersFromRepository.WithDetail(err)
-#   }
-#   return users, nil
-# }
+#   func (s *UserService) List(ctx context.Context) ([]*User, error) {
+#       ctx, logger := cid.Track(ctx, tag)
     List returns []User {
-        from UserRepository do List returning users {
-            on FAILURE {
-                return CouldNotLoadUsersFromRepository
-            }
-        }
+
+#       users, err := UserRepository.List(ctx)
+#       if err != nil {
+#           logger.W("list from user repositry failed", "err", err)
+#           return nil, CouldNotLoadUsersFromRepository.WithDetail(err)
+#       }
+        set users from UserRepository do List \
+            or halt with CouldNotLoadUsersFromRepository
+
+#       return users, nil
         return users
     }
 
-#   implies:
-#
-#   func (s *UserService) Create(ctx context.Context, req *UserCreateRequestValidationFailed) (*User, error) {
+
+#   func (s *UserService) Create(ctx context.Context, req *UserCreateRequest) (*User, error) {
 #       ctx, logger := cid.Track(ctx, tag)
+    Create with req UserCreateRequest returns User {
+
 #       if err := req.Validate(ctx); err != nil {
-#           logger.W(UserCreateRequestValidationFailed.Message, "err", err)
+#           logger.W("validate from user create request failed", "err", err)
 #           return nil, UserCreateRequestValidationFailed.WithDetail(err)
 #       }
-#       user, err := repository.Of(&User{}).Create(ctx, req)
+        from req do Validate or halt with UserCreateRequestValidationFailed
+
+#       user, err := UserRepository.Create(ctx, req)
 #       if err != nil {
-#           logger.W(CouldNotCreateUser.Message, "err", err)
+#           logger.W("create from user repositry failed", "err", err)
 #           return nil, CouldNotCreateUser.WithDetail(err)
 #       }
-#       return users, nil
-#   }
-    Create with req UserCreateRequest returns User {
-        from req do Validate {
-            on FAILURE {
-                return UserCreateRequestValidationFailed
-            }
-        }
-        from UserRepository do Create with req returning user {
-            on FAILURE {
-                return CouldNotCreateUser
-            }
-        }
+        set user from UserRepository do Create with req \
+            or halt with CouldNotCreateUser
+
+#       return user, nil
         return user
     }
 
+
+#   func (s *UserService) Update(ctx context.Context, userID int, req *UserCreateRequest) (*User, error) {
+#       ctx, logger := cid.Track(ctx, tag)
     Update with userID int and req UserUpdateRequest returns User {
-        from req do Validate {
-            on FAILURE {
-                return UserUpdateRequestValidationFailed
-            }
-        }
-        from UserRepository do Lookup with userID returning user {
-            on FAILURE {
-                return UserNotFound
-            }
-        }
-        from UserRepository do Update with req returning user {
-            on FAILURE {
-                return CouldNotUpdateUser
-            }
-        }
+
+#       if err := req.Validate(ctx); err != nil {
+#           logger.W("validate from user update request failed", "err", err)
+#           return nil, UserUpdateRequestValidationFailed.WithDetail(err)
+#       }
+        from req do Validate or halt with UserUpdateRequestValidationFailed
+
+#       _, err := UserRepository.Lookup(ctx, userID)
+#       if err != nil {
+#           logger.W("lookup from user repository failed", "err", err)
+#           return nil, UserNotFound.WithDetail(err)
+#       }
+        from UserRepository do Lookup with userID \
+            or halt with UserNotFound
+
+#       user, err := UserRepository.Update(ctx, userID, req)
+#       if err != nil {
+#           logger.W("update from user repository failed", "err", err)
+#           return nil, CouldNotUpdateUser.WithDetail(err)
+#       }
+        set user from UserRepository do Update with userID and req \
+            or halt with CouldNotUpdateUser
+
+#       return user, nil
         return user
     }
 
-    Lookup with id int returns []User {
 
+#   func (s *UserService) Lookup(ctx context.Context, id int) (*User, error) {
+#       ctx, logger := cid.Track(ctx, tag)
+    Lookup with id int returns User {
+
+#       user, err := UserRepository.Lookup(ctx, id)
+#       if err != nil {
+#           logger.W("lookup from user repository failed", "err", err)
+#           return nil, UserNotFound.WithDetail(err)
+#       }
+        set user from UserRepository do Lookup with id \
+            or halt with UserNotFound
+
+#       return user, nil
+        return user
     }
 
+
+#   func (s *UserService) SearchByName(ctx context.Context, name string) ([]*User, error) {
+#       ctx, logger := cid.Track(ctx, tag)
     SearchByName with name string returns []User {
 
+#       users, err := UserRepository.SearchByNameLike(ctx, name)
+#       if err != nil {
+#           logger.W("search by name like from user repository failed", "err", err)
+#           return nil, UserNotFound.WithDetail(err)
+#       }
+        set users from UserRepository do SearchByNameLike with name \
+            or halt with UserNotFound
+
+#       return users, nil
+        return users
     }
 
+
+#   func (s *UserService) SearchByEmail(ctx context.Context, email string) ([]*User, error) {
+#       ctx, logger := cid.Track(ctx, tag)
     SearchByEmail with email string returns []User {
 
+#       users, err := UserRepository.SearchByEmailEqual(ctx, email)
+#       if err != nil {
+#           logger.W("search by email equal from user repository failed", "err", err)
+#           return nil, UserNotFound.WithDetail(err)
+#       }
+        set users from UserRepository do SearchByEmailEqual with email \
+            or halt with UserNotFound
+
+#       return users, nil
+        return users
     }
 
+
+#   func (s *UserService) SearchAdmins(ctx context.Context) ([]*User, error) {
+#       ctx, logger := cid.Track(ctx, tag)
     SearchAdmins returns []User {
 
+#       users, err := UserRepository.SearchByIsAdminEqualTrue(ctx)
+#       if err != nil {
+#           logger.W("search by is admin equal true from user repository failed", "err", err)
+#           return nil, UserNotFound.WithDetail(err)
+#       }
+        set users from UserRepository do SearchByIsAdminEqualTrue \
+            or halt with UserNotFound
+
+#       return users, nil
+        return users
     }
 }

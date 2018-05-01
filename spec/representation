@@ -8,6 +8,7 @@ UserCreateRequest represents User {
     Address
 }
 
+
 UserUpdateRequest represents User {
     Name
     Email
