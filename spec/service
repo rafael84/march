@@ -12,7 +12,7 @@ UserService service {
 #           logger.W("list from user repositry failed", "err", err)
 #           return nil, CouldNotLoadUsersFromRepository.WithDetail(err)
 #       }
-        set users from UserRepository do List \
+        get users from UserRepository List \
             or halt with CouldNotLoadUsersFromRepository
 
 #       return users, nil
@@ -28,14 +28,14 @@ UserService service {
 #           logger.W("validate from user create request failed", "err", err)
 #           return nil, UserCreateRequestValidationFailed.WithDetail(err)
 #       }
-        from req do Validate or halt with UserCreateRequestValidationFailed
+        do req Validate or halt with UserCreateRequestValidationFailed
 
 #       user, err := UserRepository.Create(ctx, req)
 #       if err != nil {
 #           logger.W("create from user repositry failed", "err", err)
 #           return nil, CouldNotCreateUser.WithDetail(err)
 #       }
-        set user from UserRepository do Create with req \
+        get user from UserRepository Create with req \
             or halt with CouldNotCreateUser
 
 #       return user, nil
@@ -51,14 +51,14 @@ UserService service {
 #           logger.W("validate from user update request failed", "err", err)
 #           return nil, UserUpdateRequestValidationFailed.WithDetail(err)
 #       }
-        from req do Validate or halt with UserUpdateRequestValidationFailed
+        do req Validate or halt with UserUpdateRequestValidationFailed
 
 #       _, err := UserRepository.Lookup(ctx, userID)
 #       if err != nil {
 #           logger.W("lookup from user repository failed", "err", err)
 #           return nil, UserNotFound.WithDetail(err)
 #       }
-        from UserRepository do Lookup with userID \
+        do UserRepository Lookup with userID \
             or halt with UserNotFound
 
 #       user, err := UserRepository.Update(ctx, userID, req)
@@ -66,7 +66,7 @@ UserService service {
 #           logger.W("update from user repository failed", "err", err)
 #           return nil, CouldNotUpdateUser.WithDetail(err)
 #       }
-        set user from UserRepository do Update with userID and req \
+        get user from UserRepository Update with userID and req  \
             or halt with CouldNotUpdateUser
 
 #       return user, nil
@@ -83,7 +83,7 @@ UserService service {
 #           logger.W("lookup from user repository failed", "err", err)
 #           return nil, UserNotFound.WithDetail(err)
 #       }
-        set user from UserRepository do Lookup with id \
+        get user from UserRepository Lookup with id \
             or halt with UserNotFound
 
 #       return user, nil
@@ -100,7 +100,7 @@ UserService service {
 #           logger.W("search by name like from user repository failed", "err", err)
 #           return nil, UserNotFound.WithDetail(err)
 #       }
-        set users from UserRepository do SearchByNameLike with name \
+        get users from UserRepository SearchByNameLike with name \
             or halt with UserNotFound
 
 #       return users, nil
@@ -117,7 +117,7 @@ UserService service {
 #           logger.W("search by email equal from user repository failed", "err", err)
 #           return nil, UserNotFound.WithDetail(err)
 #       }
-        set users from UserRepository do SearchByEmailEqual with email \
+        get users from UserRepository SearchByEmailEqual with email \
             or halt with UserNotFound
 
 #       return users, nil
@@ -134,7 +134,7 @@ UserService service {
 #           logger.W("search by is admin equal true from user repository failed", "err", err)
 #           return nil, UserNotFound.WithDetail(err)
 #       }
-        set users from UserRepository do SearchByIsAdminEqualTrue \
+        get users from UserRepository SearchByIsAdminEqualTrue \
             or halt with UserNotFound
 
 #       return users, nil
