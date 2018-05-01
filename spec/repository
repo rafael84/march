@@ -1,13 +1,53 @@
 # vim:ft=Marchfile
+
+# package user
+#
+# const tag = "user"
 module user
 
+# var (
+#   db *gorm.DB
+# )
+#
+# func MustOpen(ctx context.Context, driver, connection string) {
+#   _, logger := cid.Track(ctx, tag)
+#   var err error
+#   db, err = gorm.Open("sqlite3", "test.db")
+#   if err != nil {
+#       logger.F("database open failed", "err", err)
+#   }
+# }
+#
+# func Close(ctx context.Context) {
+#   db.Close()
+# }
+
+# type UserRepository struct {
 UserRepository persists User {
 
+#   func (r *UserRepository) List(ctx context.Context) ([]*User, error) {
+#       ctx, logger := cid.Track(ctx, tag)
+#       var userList []*User
+#       if err := db.Find(&userList).Error; err != nil {
+#           logger.W("find user list failed", "err", err)
+#           return errors.Wrap(err, "find user list failed", "err", err)
+#       }
+#       return userList, nil
+#   }
     @Find
     List returns User list
 
+#   func (r *UserRepository) Create(ctx context.Context, uc *UserCreate) (*User, error) {
+#       ctx, logger := cid.Track(ctx, tag)
+#       user := uc.Model()
+#       if err := db.Create(&user).Error; err != nil {
+#           logger.W("create user list", "err", err)
+#           return errors.Wrap(err, "create user failed", "err", err)
+#       }
+#       return user, nil
+#   }
     @Create
-    Create with UserCreate returns User
+    Create with uc UserCreate returns User
 
     @Find
     @Where "id = ?"
@@ -15,7 +55,7 @@ UserRepository persists User {
 
     @Update
     @Where "id = ?"
-    Update with id int and req UserUpdate returns User
+    Update with id int and uu UserUpdate returns User
 
     @Find
     @Where "name like ?"
