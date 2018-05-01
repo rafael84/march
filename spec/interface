@@ -35,19 +35,19 @@ UserAPI interface {
 #       ctx, logger := cid.Track(r.Context(), tag)
     POST "/user" {
 
-#       user := new(UserCreateRequest)
+#       user := new(UserCreate)
 #       if err := json.UnMarshal(r.Body, user); err != nil {
-#           logger.W("decode request body as user create request failed", "err", err)
-#           i.renderJSON(w, http.StatusBadRequest, InvalidUserCreateRequest.WithDetail(err))
+#           logger.W("decode request body as user create failed", "err", err)
+#           i.renderJSON(w, http.StatusBadRequest, InvalidUserCreate.WithDetail(err))
 #           return
 #       }
-        get user from decode REQUEST BODY as UserCreateRequest \
-            or halt with BAD_REQUEST and InvalidUserCreateRequest
+        get user from decode REQUEST BODY as UserCreate \
+            or halt with BAD_REQUEST and InvalidUserCreate
 
 #       newUser, err := UserService.Create(ctx, user)
 #       if err != nil {
 #           switch err {
-#           case UserCreateRequestValidationFailed:
+#           case UserCreateValidationFailed:
 #               logger.W("create from user service failed", "err", err)
 #               i.renderJSON(w, http.StatusBadRequest, CouldNotCreateUser.WithDetail(err))
 #               return
@@ -58,7 +58,7 @@ UserAPI interface {
 #           }
 #       }
         get newUser from UserService Create with user {
-            when UserCreateRequestValidationFailed {
+            when UserCreateValidationFailed {
                 return BAD_REQUEST and FAILURE
             }
             when FAILURE {
@@ -113,14 +113,14 @@ UserAPI interface {
         get userID from decode PATH id as int \
             or halt with BAD_REQUEST and InvalidUserID
 
-#       request := new(UserUpdateRequest)
+#       request := new(UserUpdate)
 #       if err := json.UnMarshal(r.Body, request); err != nil {
-#           logger.W("decode request body as user update request failed", "err", err)
-#           i.renderJSON(w, http.StatusBadRequest, InvalidUserUpdateRequest.WithDetail(err))
+#           logger.W("decode request body as user update failed", "err", err)
+#           i.renderJSON(w, http.StatusBadRequest, InvalidUserUpdate.WithDetail(err))
 #           return
 #       }
-        get request from decode REQUEST BODY as UserUpdateRequest \
-            or halt with BAD_REQUEST and InvalidUserUpdateRequest
+        get request from decode REQUEST BODY as UserUpdate \
+            or halt with BAD_REQUEST and InvalidUserUpdate
 
 #       user, err := UserService.Update(ctx, userID, request)
 #       if err != nil {

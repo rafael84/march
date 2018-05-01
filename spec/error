@@ -1,19 +1,49 @@
 # vim:ft=Marchfile
 module user
 
+#   type Error struct {
+#       ID int             `json:"id"`
+#       Message string     `json:"message"`
+#       Detail interface{} `json:"detail,omitempty"`
+#   }
+
+# var (
 error 1000 {
-    CouldNotListUsers        # implies ID=1000, Message=could not list users
-    InvalidUserCreateRequest # implies ID=1001, Message=invalid user create request
-    InvalidUserID            # implies ID=1002, Message=invalid user id
+
+#   CouldNotListUsers = &Error{ID:1000, Message:"could not list users"}
+    CouldNotListUsers
+
+#   InvalidUserCreate = &Error{ID:1001, Message:"invalid user create"}
+    InvalidUserCreate
+
+#   InvalidUserID     = &Error{ID:1002, Message:"invalid user id"}
+    InvalidUserID
 }
 
+
+# var (
 error 2000 {
-    CouldNotCreateUser # implies ID=2000, Message=could not create user
+
+#   CouldNotCreateUser = &Error{ID:2000, Message:"could not create user"}
+    CouldNotCreateUser
+
+#   UserNotFound       = &Error{ID:2001, Message:"user not found"}
     UserNotFound
+
+# )
 }
 
+# var (
 error 3000 {
-    CouldNotLoadUsersFromRepository   # implies ID=3000, Message=could not load users from repository
-    UserCreateRequestValidationFailed
+
+#   CouldNotLoadUsersFromRepository = &Error{ID:3000, Message:"could not load users from repository"}
+    CouldNotLoadUsersFromRepository
+
+#   UserCreateValidationFailed      = &Error{ID:3001, Message:"user create validation failed"}
+    UserCreateValidationFailed
+
+#   CouldNotUpdateUser              = &Error{ID:3002, Message:"could not update user"}
     CouldNotUpdateUser
+
+# )
 }

@@ -1,4 +1,31 @@
 # vim:ft=Marchfile
 module user
 
-UserRepository persists User
+UserRepository persists User {
+
+    @Find
+    List returns User list
+
+    @Create
+    Create with UserCreate returns User
+
+    @Find
+    @Where "id = ?"
+    Lookup with id int returns User
+
+    @Update
+    @Where "id = ?"
+    Update with id int and req UserUpdate returns User
+
+    @Find
+    @Where "name like ?"
+    SearchByNameLike with name string returns User list
+
+    @Find
+    @Where "email = ?"
+    SearchByEmailEqual with email string returns User list
+
+    @Find
+    @Where "is_admin = TRUE"
+    SearchByIsAdminEqualTrue returns User list
+}

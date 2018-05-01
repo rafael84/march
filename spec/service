@@ -20,15 +20,15 @@ UserService service {
     }
 
 
-#   func (s *UserService) Create(ctx context.Context, req *UserCreateRequest) (*User, error) {
+#   func (s *UserService) Create(ctx context.Context, req *UserCreate) (*User, error) {
 #       ctx, logger := cid.Track(ctx, tag)
-    Create with req UserCreateRequest returns User {
+    Create with req UserCreate returns User {
 
 #       if err := req.Validate(ctx); err != nil {
-#           logger.W("validate from user create request failed", "err", err)
-#           return nil, UserCreateRequestValidationFailed.WithDetail(err)
+#           logger.W("validate from user create failed", "err", err)
+#           return nil, UserCreateValidationFailed.WithDetail(err)
 #       }
-        do req Validate or halt with UserCreateRequestValidationFailed
+        do req Validate or halt with UserCreateValidationFailed
 
 #       user, err := UserRepository.Create(ctx, req)
 #       if err != nil {
@@ -43,15 +43,15 @@ UserService service {
     }
 
 
-#   func (s *UserService) Update(ctx context.Context, userID int, req *UserCreateRequest) (*User, error) {
+#   func (s *UserService) Update(ctx context.Context, userID int, req *UserCreate) (*User, error) {
 #       ctx, logger := cid.Track(ctx, tag)
-    Update with userID int and req UserUpdateRequest returns User {
+    Update with userID int and req UserUpdate returns User {
 
 #       if err := req.Validate(ctx); err != nil {
-#           logger.W("validate from user update request failed", "err", err)
-#           return nil, UserUpdateRequestValidationFailed.WithDetail(err)
+#           logger.W("validate from user update failed", "err", err)
+#           return nil, UserUpdateValidationFailed.WithDetail(err)
 #       }
-        do req Validate or halt with UserUpdateRequestValidationFailed
+        do req Validate or halt with UserUpdateValidationFailed
 
 #       _, err := UserRepository.Lookup(ctx, userID)
 #       if err != nil {
