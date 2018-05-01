@@ -5,7 +5,7 @@ UserService service {
 
 #   func (s *UserService) List(ctx context.Context) ([]*User, error) {
 #       ctx, logger := cid.Track(ctx, tag)
-    List returns []User {
+    List returns User list {
 
 #       users, err := UserRepository.List(ctx)
 #       if err != nil {
@@ -93,7 +93,7 @@ UserService service {
 
 #   func (s *UserService) SearchByName(ctx context.Context, name string) ([]*User, error) {
 #       ctx, logger := cid.Track(ctx, tag)
-    SearchByName with name string returns []User {
+    SearchByName with name string returns User list {
 
 #       users, err := UserRepository.SearchByNameLike(ctx, name)
 #       if err != nil {
@@ -110,7 +110,7 @@ UserService service {
 
 #   func (s *UserService) SearchByEmail(ctx context.Context, email string) ([]*User, error) {
 #       ctx, logger := cid.Track(ctx, tag)
-    SearchByEmail with email string returns []User {
+    SearchByEmail with email string returns User list {
 
 #       users, err := UserRepository.SearchByEmailEqual(ctx, email)
 #       if err != nil {
@@ -127,7 +127,7 @@ UserService service {
 
 #   func (s *UserService) SearchAdmins(ctx context.Context) ([]*User, error) {
 #       ctx, logger := cid.Track(ctx, tag)
-    SearchAdmins returns []User {
+    SearchAdmins returns User list {
 
 #       users, err := UserRepository.SearchByIsAdminEqualTrue(ctx)
 #       if err != nil {

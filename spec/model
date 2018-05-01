@@ -23,26 +23,24 @@ User model {
     @Column "is_admin"
     IsAdmin bool
 
-#   implies:
-#       AddressPhone string
-#       AddressCity string
+#   AddressPhone string
+#   AddressCity string
     Address {
         Phone string
         City string
     }
 
-#   implies:
-#       Metadata data.JSONB
+#   Metadata march.JSONB
     @JSON
     Metadata {
         LastLogin timestamp
     }
 
     @OneToMany
-    Groups []Group
+    Groups Group list
 
     @OneToMany
-    Permissions []Permission
+    Permissions Permission list
 }
 
 @Table "user.group"
