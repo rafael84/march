@@ -1,12 +1,9 @@
 # vim:ft=Marchfile
 module user
 
-# type User struct {}
-#
-#
-#
 @Table "user.user"
 User entity {
+# type User struct {
 
     @ID
     ID int
@@ -54,8 +51,10 @@ User entity {
     @OneToMany
     Permissions Permission list
 #   Permissions []*Permission `annotations:"@OneToMany"`
-}
 
+}
+# }
+#
 # func (e *User) TableName() string {
 #       return "user.user"
 # }
