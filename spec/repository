@@ -1,9 +1,9 @@
 # vim:ft=Marchfile
 
+module user
 # package user
 #
 # const tag = "user"
-module user
 
 # var (
 #   db *gorm.DB
@@ -22,9 +22,11 @@ module user
 #   db.Close()
 # }
 
-# type UserRepository struct {
 UserRepository persists User {
+# type UserRepository struct {
 
+    @Find
+    List returns User list
 #   func (r *UserRepository) List(ctx context.Context) ([]*User, error) {
 #       ctx, logger := cid.Track(ctx, tag)
 #       var userList []*User
@@ -34,20 +36,18 @@ UserRepository persists User {
 #       }
 #       return userList, nil
 #   }
-    @Find
-    List returns User list
 
+    @Create
+    Create with uc UserCreate returns User
 #   func (r *UserRepository) Create(ctx context.Context, uc *UserCreate) (*User, error) {
 #       ctx, logger := cid.Track(ctx, tag)
-#       user := uc.Model()
+#       user := uc.Entity(ctx)
 #       if err := db.Create(&user).Error; err != nil {
 #           logger.W("create user list", "err", err)
 #           return errors.Wrap(err, "create user failed", "err", err)
 #       }
 #       return user, nil
 #   }
-    @Create
-    Create with uc UserCreate returns User
 
     @Find
     @Where "id = ?"

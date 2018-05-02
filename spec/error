@@ -7,43 +7,45 @@ module user
 #       Detail interface{} `json:"detail,omitempty"`
 #   }
 
-# var (
 error 1000 {
+# var (
 
-#   CouldNotListUsers = &Error{ID:1000, Message:"could not list users"}
     CouldNotListUsers
+#   CouldNotListUsers = &Error{ID:1000, Message:"could not list users"}
 
-#   InvalidUserCreate = &Error{ID:1001, Message:"invalid user create"}
     InvalidUserCreate
+#   InvalidUserCreate = &Error{ID:1001, Message:"invalid user create"}
 
-#   InvalidUserID     = &Error{ID:1002, Message:"invalid user id"}
     InvalidUserID
+#   InvalidUserID     = &Error{ID:1002, Message:"invalid user id"}
+
 }
+# )
 
 
-# var (
 error 2000 {
-
-#   CouldNotCreateUser = &Error{ID:2000, Message:"could not create user"}
-    CouldNotCreateUser
-
-#   UserNotFound       = &Error{ID:2001, Message:"user not found"}
-    UserNotFound
-
-# )
-}
-
 # var (
-error 3000 {
 
-#   CouldNotLoadUsersFromRepository = &Error{ID:3000, Message:"could not load users from repository"}
-    CouldNotLoadUsersFromRepository
+    CouldNotCreateUser
+#   CouldNotCreateUser = &Error{ID:2000, Message:"could not create user"}
 
-#   UserCreateValidationFailed      = &Error{ID:3001, Message:"user create validation failed"}
-    UserCreateValidationFailed
+    UserNotFound
+#   UserNotFound       = &Error{ID:2001, Message:"user not found"}
 
-#   CouldNotUpdateUser              = &Error{ID:3002, Message:"could not update user"}
-    CouldNotUpdateUser
-
-# )
 }
+# )
+
+error 3000 {
+# var (
+
+    CouldNotLoadUsersFromRepository
+#   CouldNotLoadUsersFromRepository = &Error{ID:3000, Message:"could not load users from repository"}
+
+    UserCreateValidationFailed
+#   UserCreateValidationFailed      = &Error{ID:3001, Message:"user create validation failed"}
+
+    CouldNotUpdateUser
+#   CouldNotUpdateUser              = &Error{ID:3002, Message:"could not update user"}
+
+}
+# )

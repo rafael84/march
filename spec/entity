@@ -1,0 +1,96 @@
+# vim:ft=Marchfile
+module user
+
+# type User struct {}
+#
+#
+#
+@Table "user.user"
+User entity {
+
+    @ID
+    ID int
+#   ID int `annotations:"@ID"`
+
+    @Index
+    Name string
+#   Name string `annotations:"@Index"`
+
+    @Validate "email"
+    Email string
+#   Email string `annotations:"@Validate(email)"`
+
+    @Validate "regex:[a-zA-Z0-9]"
+    @Unique
+    Login string
+#   Login string `annotations:"@Validate(regex:[a-zA-Z0-9]) @Unique"`
+
+    @Hash
+    @Hidden
+    Password string
+#   Password string `annotations:"@Hash @Hidden"`
+
+    @Column "is_admin"
+    IsAdmin bool
+#   IsAdmin string `annotations:"@Column(is_admin)"`
+
+    @Optional
+    Address {
+        Phone string
+        City string
+    }
+#   Address *UserAddress `annotations:"@Optional"`
+
+    @JSON
+    Metadata {
+        LastLogin timestamp
+    }
+#   Metadata march.JSONB `annotations:"@JSON"`
+
+    @OneToMany
+    Groups Group list
+#   Group []*Group `annotations:"@OneToMany"`
+
+    @OneToMany
+    Permissions Permission list
+#   Permissions []*Permission `annotations:"@OneToMany"`
+}
+
+# func (e *User) TableName() string {
+#       return "user.user"
+# }
+#
+# type UserAddress struct {
+#       Phone string
+#       City string
+# }
+#
+# type UserMetadata struct {
+#       LastLogin timestamp
+# }
+#
+# // Value implements the driver.Valuer interface
+# func (um *UserMetadata) Value() (driver.Value, error) {
+#       ...
+# }
+#
+# // Scan implements the sql.Scanner interface
+# func (um *UserMetadata) Scan(src interface{}) error {
+#       ...
+# }
+
+@Table "user.group"
+Group entity {
+    @ID
+    ID int
+
+    Name string
+}
+
+@Table "user.permission"
+Permission entity {
+    @ID
+    ID int
+
+    Name string
+}

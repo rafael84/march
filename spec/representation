@@ -7,7 +7,41 @@ UserCreate represents User {
     Login
     Address
 }
-
+# type UserCreate struct {
+#     Name string          `json:"name"`
+#     Email string         `json:"email"`
+#     Login string         `json:"login"`
+#     Address *UserAddress `json:"address,omitempty"`
+# }
+#
+# func (r *UserCreate) Validate(ctx context.Context) error {
+#     if IsEmpty(ctx, r.Name) {
+#         return errors.New("name must be specified")
+#     }
+#     if IsEmpty(ctx, r.Email) {
+#         return errors.New("email must be specified")
+#     }
+#     if IsValidEmail(ctx, r.Email) {
+#         return errors.New("invalid email address")
+#     }
+# }
+#
+# func (r *UserCreate) Entity(ctx context.Context) *User {
+#     return &User{
+#         Name:    r.Name,
+#         Email:   r.Email,
+#         Login:   r.Login,
+#         Address: r.Address,
+#     }
+# }
+#
+# func IsEmpty(ctx context.Context, value string) bool {
+#     return strings.TrimSpace(value) == ""
+# }
+#
+# func IsValidEmail(ctx context.Context, email string) bool {
+#     ...
+# }
 
 UserUpdate represents User {
     Name

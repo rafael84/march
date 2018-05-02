@@ -2,8 +2,9 @@
 module user
 
 import "config"
-import "domain"
 import "error"
-import "service"
-import "repository"
 import "interface"
+import "entity"
+import "repository"
+import "representation"
+import "service"
