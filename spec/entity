@@ -107,11 +107,13 @@ UserGroup entity {
     @OneToOne
     User User
 #   User *User `annotations:"@ID @OneToOne"`
+#   UserID int64
 
     @ID
     @OneToOne
     Group Group
 #   Group *Group `annotations:"@ID @OneToOne"`
+#   GroupID int64
 
 }
 # }
@@ -148,11 +150,13 @@ UserPermission entity {
     @OneToOne
     User User
 #   User *User `annotations:"@ID @OneToOne"`
+#   UserID int64
 
     @ID
     @OneToOne
     Permission Permission
 #   Permission *Permission `annotations:"@ID @OneToOne"`
+#   PermissionID int64
 
     @Default "CURRENT_TIMESTAMP"
     DateGranted timestamp
