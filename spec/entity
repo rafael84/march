@@ -7,11 +7,12 @@ User entity {
 
     @ID
     ID int
-#   ID int `annotations:"@ID"`
+#   ID int64 `annotations:"@ID"`
 
     @Index
+    @MaxLength 100
     Name string
-#   Name string `annotations:"@Index"`
+#   Name string `annotations:"@Index @MaxLength(100)"`
 
     @Validate "email"
     Email string
@@ -44,13 +45,13 @@ User entity {
     }
 #   Metadata march.JSONB `annotations:"@JSON"`
 
-    @OneToMany
-    Groups Group list
-#   Group []*Group `annotations:"@OneToMany"`
+    @ManyToMany Group
+    Groups UserGroup list
+#   Group []*UserGroup `annotations:"@ManyToMany(Group)"`
 
-    @OneToMany
-    Permissions Permission list
-#   Permissions []*Permission `annotations:"@OneToMany"`
+    @ManyToMany Permission
+    Permissions UserPermission list
+#   Permissions []*UserPermission `annotations:"@ManyToMany(Permission)"`
 
 }
 # }
@@ -80,16 +81,86 @@ User entity {
 
 @Table "user.group"
 Group entity {
+# type Group struct {
+
     @ID
     ID int
+#   ID int64 `annotations:"@ID"`
 
+    @MaxLength 100
     Name string
+#   Name string `annotations:"@MaxLength(100)"`
+
 }
+# }
+#
+# func (e *Group) TableName() string {
+#       return "user.group"
+# }
+
+
+@Table "user.user_group"
+UserGroup entity {
+# type UserGroup struct {
+
+    @ID
+    @OneToOne
+    User User
+#   User *User `annotations:"@ID @OneToOne"`
+
+    @ID
+    @OneToOne
+    Group Group
+#   Group *Group `annotations:"@ID @OneToOne"`
+
+}
+# }
+#
+# func (e *UserGroup) TableName() string {
+#       return "user.user_group"
+# }
+
 
 @Table "user.permission"
 Permission entity {
+# type Permission struct {
+
     @ID
     ID int
+#   ID int64 `annotations:"@ID"`
 
     Name string
+#   Name string
+
 }
+# }
+#
+# func (e *Permission) TableName() string {
+#       return "user.permission"
+# }
+
+
+@Table "user.user_permission"
+UserPermission entity {
+# type UserPermission struct {
+
+    @ID
+    @OneToOne
+    User User
+#   User *User `annotations:"@ID @OneToOne"`
+
+    @ID
+    @OneToOne
+    Permission Permission
+#   Permission *Permission `annotations:"@ID @OneToOne"`
+
+    @Default "CURRENT_TIMESTAMP"
+    DateGranted timestamp
+#   DateGranted time.Date `annotations:"@Default(CURRENT_TIMESTAMP)"`
+
+}
+# }
+#
+# func (e *UserPermission) TableName() string {
+#       return "user.user_permission"
+# }

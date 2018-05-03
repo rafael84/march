@@ -43,8 +43,26 @@ UserCreate represents User {
 #     ...
 # }
 
+
 UserUpdate represents User {
     Name
     Email
     Address
 }
+# type UserUpdate struct {
+#     Name string          `json:"name"`
+#     Email string         `json:"email"`
+#     Address *UserAddress `json:"address,omitempty"`
+# }
+#
+# func (r *UserUpdate) Validate(ctx context.Context) error {
+#     if IsEmpty(ctx, r.Name) {
+#         return errors.New("name must be specified")
+#     }
+#     if IsEmpty(ctx, r.Email) {
+#         return errors.New("email must be specified")
+#     }
+#     if IsValidEmail(ctx, r.Email) {
+#         return errors.New("invalid email address")
+#     }
+# }
