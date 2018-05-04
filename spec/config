@@ -1,26 +1,45 @@
 # vim:ft=Marchfile
-module main
 
-Environment config {
+Environment config "APP" {
     Log {
         @Default "info"
         Level string
     }
 
-    @Default ":8080"
-    Address string
+    Server {
+        @Default ":9001"
+        Addr string
 
-    Database {
-        @Default "pg://user:pass@127.0.0.1/users?sslmode=disabled"
-        URL string
+        @Default "http"
+        Scheme string
+
+        @Default "localhost:9001"
+        Host string
     }
-    Workers {
-        Queue {
-            @Minimum "1"
-            @Default "100"
-            @Maximum "200"
-            Size int
-        }
-    }
-    UpdateInterval interval
 }
+#   package config
+#
+#   import (
+#   	"github.com/bemobi/log"
+#   	"github.com/bemobi/envconfig"
+#   )
+#
+#   const tag = "config"
+#
+#   var Environment struct {
+#       Log struct {
+#           Level string `envconfig:"default=info"`
+#       }
+#   	Server struct {
+#   		Addr   string `envconfig:"default=:9001"`
+#   		Scheme string `envconfig:"default=http"`
+#   		Host   string `envconfig:"default=localhost:9001"`
+#   	}
+#   }
+#
+#   func init() {
+#   	if err := envconfig.InitWithPrefix(&Data, "APP"); err != nil {
+#   		log.F(tag, "could not initialize", "err", err)
+#   	}
+#   	log.SetLevel(Data.LogLevel)
+#   }

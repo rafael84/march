@@ -1,11 +1,13 @@
 # vim:ft=Marchfile
-module user
 
+#   package errors
+#
 #   type Error struct {
 #       ID int             `json:"id"`
 #       Message string     `json:"message"`
 #       Detail interface{} `json:"detail,omitempty"`
 #   }
+
 
 error 1000 {
 # var (

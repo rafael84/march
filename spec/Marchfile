@@ -1,10 +1,7 @@
-# vim:ft=Marchfile
-module user
-
 import "config"
 import "error"
-import "interface"
-import "entity"
+import "handler"
+import "model"
 import "repository"
 import "representation"
 import "service"

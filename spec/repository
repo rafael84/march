@@ -1,29 +1,28 @@
 # vim:ft=Marchfile
 
-module user
-# package user
+#   package repository
 #
-# const tag = "user"
-
-# var (
-#   db *gorm.DB
-# )
+#   const tag = "repository"
 #
-# func MustOpen(ctx context.Context, driver, connection string) {
-#   _, logger := cid.Track(ctx, tag)
-#   var err error
-#   db, err = gorm.Open("sqlite3", "test.db")
-#   if err != nil {
-#       logger.F("database open failed", "err", err)
+#   var (
+#       db *gorm.DB
+#   )
+#
+#   func MustOpen(ctx context.Context, driver, connection string) {
+#       _, logger := cid.Track(ctx, tag)
+#       var err error
+#       db, err = gorm.Open(driver, connection)
+#       if err != nil {
+#           logger.F("database open failed", "err", err)
+#       }
 #   }
-# }
 #
-# func Close(ctx context.Context) {
-#   db.Close()
-# }
+#   func Close(ctx context.Context) {
+#       db.Close()
+#   }
 
-UserRepository persists User {
-# type UserRepository struct {
+UserRepository repository {
+#   type UserRepository struct {}
 
     @Find
     List returns User list
@@ -41,7 +40,7 @@ UserRepository persists User {
     Create with uc UserCreate returns User
 #   func (r *UserRepository) Create(ctx context.Context, uc *UserCreate) (*User, error) {
 #       ctx, logger := cid.Track(ctx, tag)
-#       user := uc.Entity(ctx)
+#       user := uc.Model(ctx)
 #       if err := db.Create(&user).Error; err != nil {
 #           logger.W("create user list", "err", err)
 #           return errors.Wrap(err, "create user failed", "err", err)

@@ -1,8 +1,7 @@
 # vim:ft=Marchfile
-module user
 
 @Table "user.user"
-User entity {
+User model {
 # type User struct {
 
     @ID
@@ -80,7 +79,7 @@ User entity {
 # }
 
 @Table "user.group"
-Group entity {
+Group model {
 # type Group struct {
 
     @ID
@@ -100,7 +99,7 @@ Group entity {
 
 
 @Table "user.user_group"
-UserGroup entity {
+UserGroup model {
 # type UserGroup struct {
 
     @ID
@@ -124,7 +123,7 @@ UserGroup entity {
 
 
 @Table "user.permission"
-Permission entity {
+Permission model {
 # type Permission struct {
 
     @ID
@@ -143,7 +142,7 @@ Permission entity {
 
 
 @Table "user.user_permission"
-UserPermission entity {
+UserPermission model {
 # type UserPermission struct {
 
     @ID

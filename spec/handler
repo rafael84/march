@@ -1,10 +1,10 @@
 # vim:ft=Marchfile
-module user
 
-UserAPI interface {
-#   type UserAPI struct {}
+UserAPI handler {
+
+#   package handler
 #
-#   func (i *UserAPI) renderJSON(w http.ResponseWriter, status int, data interface{}) {
+#   func renderJSON(w http.ResponseWriter, status int, data interface{}) {
 #       ctx, logger := cid.Track(r.Context(), tag)
 #       w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 #       w.WriteHeader(status)
@@ -12,6 +12,8 @@ UserAPI interface {
 #           logger.E("unexpected error", "err", err)
 #       }
 #   }
+#
+#   type UserAPI struct {}
 
     GET "/user" {
 #   func (i *UserAPI) GetUser(w http.ResponseWriter, r *http.Request) {
@@ -22,12 +24,12 @@ UserAPI interface {
 #       users, err := UserService.List(ctx)
 #       if err != nil {
 #           logger.W("list from user service failed", "err", err)
-#           i.renderJSON(w, http.StatusInternalServerError, CouldNotListUser.WithDetail(err))
+#           renderJSON(w, http.StatusInternalServerError, CouldNotListUser.WithDetail(err))
 #           return
 #       }
 
         return OK and users
-#       i.renderJSON(w, http.StatusOK, users)
+#       renderJSON(w, http.StatusOK, users)
 #       return
 
     }
@@ -37,12 +39,12 @@ UserAPI interface {
 #   func (i *UserAPI) PostUser(w http.ResponseWriter, r *http.Request) {
 #       ctx, logger := cid.Track(r.Context(), tag)
 
-        get user from decode REQUEST BODY as UserCreate \
+        get user from REQUEST BODY as UserCreate \
             or halt with BAD_REQUEST and InvalidUserCreate
 #       user := new(UserCreate)
 #       if err := json.UnMarshal(r.Body, user); err != nil {
 #           logger.W("decode request body as user create failed", "err", err)
-#           i.renderJSON(w, http.StatusBadRequest, InvalidUserCreate.WithDetail(err))
+#           renderJSON(w, http.StatusBadRequest, InvalidUserCreate.WithDetail(err))
 #           return
 #       }
 
@@ -59,17 +61,17 @@ UserAPI interface {
 #           switch err {
 #           case UserCreateValidationFailed:
 #               logger.W("create from user service failed", "err", err)
-#               i.renderJSON(w, http.StatusBadRequest, CouldNotCreateUser.WithDetail(err))
+#               renderJSON(w, http.StatusBadRequest, CouldNotCreateUser.WithDetail(err))
 #               return
 #           default:
 #               logger.W("create from user service failed", "err", err)
-#               i.renderJSON(w, http.StatusInternalServerError, CouldNotCreateUser.WithDetail(err))
+#               renderJSON(w, http.StatusInternalServerError, CouldNotCreateUser.WithDetail(err))
 #               return
 #           }
 #       }
 
         return CREATED and newUser
-#       i.renderJSON(w, http.StatusCreated, newUser)
+#       renderJSON(w, http.StatusCreated, newUser)
 #       return
     }
 #   }
@@ -79,12 +81,12 @@ UserAPI interface {
 #   func (i *UserAPI) GetUserByID(w http.ResponseWriter, r *http.Request) {
 #       ctx, logger := cid.Track(r.Context(), tag)
 
-        get userID from decode PATH id as int \
+        get userID from PATH id as int \
             or halt with BAD_REQUEST and InvalidUserID
 #       var userID int64
 #       if parsed, err := strconv.ParseInt(mux.Vars(r)["id"], 10, 64); err != nil {
 #           logger.W("decode path id as int failed", "err", err)
-#           i.renderJSON(w, http.StatusBadRequest, InvalidUserID.WithDetail(err))
+#           renderJSON(w, http.StatusBadRequest, InvalidUserID.WithDetail(err))
 #           return
 #       }
 
@@ -93,12 +95,12 @@ UserAPI interface {
 #       user, err := UserService.Lookup(ctx, userID)
 #       if err != nil {
 #           logger.W("lookup from user service failed", "err", err)
-#           i.renderJSON(w, http.StatusInternalServerError, CouldNotListUser.WithDetail(err))
+#           renderJSON(w, http.StatusInternalServerError, CouldNotListUser.WithDetail(err))
 #           return
 #       }
 
         return OK and user
-#       i.renderJSON(w, http.StatusOK, user)
+#       renderJSON(w, http.StatusOK, user)
 #       return
 
     }
@@ -109,21 +111,21 @@ UserAPI interface {
 #   func (i *UserAPI) PutUserByID(w http.ResponseWriter, r *http.Request) {
 #       ctx, logger := cid.Track(r.Context(), tag)
 
-        get userID from decode PATH id as int \
+        get userID from PATH id as int \
             or halt with BAD_REQUEST and InvalidUserID
 #       var userID int64
 #       if parsed, err := strconv.ParseInt(mux.Vars(r)["id"], 10, 64); err != nil {
 #           logger.W("decode path id as int failed", "err", err)
-#           i.renderJSON(w, http.StatusBadRequest, InvalidUserID.WithDetail(err))
+#           renderJSON(w, http.StatusBadRequest, InvalidUserID.WithDetail(err))
 #           return
 #       }
 
-        get request from decode REQUEST BODY as UserUpdate \
+        get request from REQUEST BODY as UserUpdate \
             or halt with BAD_REQUEST and InvalidUserUpdate
 #       request := new(UserUpdate)
 #       if err := json.UnMarshal(r.Body, request); err != nil {
 #           logger.W("decode request body as user update failed", "err", err)
-#           i.renderJSON(w, http.StatusBadRequest, InvalidUserUpdate.WithDetail(err))
+#           renderJSON(w, http.StatusBadRequest, InvalidUserUpdate.WithDetail(err))
 #           return
 #       }
 
@@ -140,17 +142,17 @@ UserAPI interface {
 #           switch err {
 #           case UserNotFound:
 #               logger.W("update from user service failed", "err", err)
-#               i.renderJSON(w, http.StatusNotFound, CouldNotUpdateUser.WithDetail(err))
+#               renderJSON(w, http.StatusNotFound, CouldNotUpdateUser.WithDetail(err))
 #               return
 #           default:
 #               logger.W("update from user service failed", "err", err)
-#               i.renderJSON(w, http.StatusInternalServerError, CouldNotUpdateUser.WithDetail(err))
+#               renderJSON(w, http.StatusInternalServerError, CouldNotUpdateUser.WithDetail(err))
 #               return
 #           }
 #       }
 
         return OK and user
-#       i.renderJSON(w, http.StatusOK, user)
+#       renderJSON(w, http.StatusOK, user)
 #       return
 
     }
